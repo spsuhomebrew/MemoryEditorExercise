@@ -7,7 +7,7 @@ const SCREEN_WIDTH = 640;
 const SCREEN_HEIGHT = 480;
 
 int setup(SDL_Window** window, SDL_Surface** surface);
-void render(SDL_Window* window, SDL_Surface* surface, SDL_Surface* background, SDL_Surface* player, int x, int y);
+void render(SDL_Window* window, SDL_Surface* surface, SDL_Surface* background, SDL_Surface* player, SDL_Surface* carrot, int x, int y);
 
 int setup(SDL_Window** window, SDL_Surface** screenSurface)
 {
@@ -26,11 +26,13 @@ int setup(SDL_Window** window, SDL_Surface** screenSurface)
     return 0;
 }
 
-void render(SDL_Window* window, SDL_Surface* surface, SDL_Surface* background, SDL_Surface* player, int x, int y)
+void render(SDL_Window* window, SDL_Surface* surface, SDL_Surface* background, SDL_Surface* player, SDL_Surface* carrot, int x, int y)
 {
-    SDL_Rect rcDest = { x, y, 48, 32 };
+    SDL_Rect playerLoc = { x, y, 48, 32 };
+    SDL_Rect carrotLoc = { 20, 20, 0, 0 };
     SDL_BlitSurface(background, NULL, surface, NULL);
-    SDL_BlitSurface(player, NULL, surface, &rcDest);
+    SDL_BlitSurface(player, NULL, surface, &playerLoc);
+    SDL_BlitSurface(carrot, NULL, surface, &carrotLoc);
     SDL_UpdateWindowSurface(window);
 }
 
@@ -40,6 +42,7 @@ int main(int argc, char **argv)
     SDL_Surface* screenSurface = NULL;
     SDL_Surface* background = SDL_LoadBMP( "background.bmp");
     SDL_Surface* player = SDL_LoadBMP("rabbit_normal.bmp");
+    SDL_Surface* carrot = SDL_LoadBMP("carrot.bmp");
 
     // location of player
     // origin (0,0) is star location.
@@ -51,6 +54,7 @@ int main(int argc, char **argv)
     }
 
     int quit = 0;
+    int win = 0;
     while (quit == 0) {
         SDL_Event e;
         while( SDL_PollEvent( &e ) != 0 )
@@ -80,6 +84,12 @@ int main(int argc, char **argv)
                     }
                 }
         }
-        render(window, screenSurface, background, player, 20 + 80*x, 20 + 80*y);
+        if (x == 0 && y == 0) {
+            quit = 1;
+            win = 1;
+        }
+        render(window, screenSurface, background, player, carrot, 20 + 80*x, 20 + 80*y);
     }
+    if (win == 1)
+        SDL_Delay(2000);
 }
